@@ -11,7 +11,9 @@
 #include "lcd.h"
 
 int valoracelerador,valortanque,valorfreno,valorluzfreno;
-int valorluzretro,valortemperatura;
+int valorluzretro,valortemperatura,encendido=0;
+
+int velocidad,velocidadmaxima,distanciatotal,distaciarecorrido,distanciausuario;
 
 void configinterrupcion(void);
 void iniciomicro(void);
@@ -57,11 +59,11 @@ void tempambiente(void)
 	int temp;
 	adtemperatura();
 	temp=valortemperatura/9.3;
-	lcd_gotoxy(10,1);
+	lcd_gotoxy(25,0);
 	lcd_puts("Tem:");
-	lcd_gotoxy(14,2);
+	lcd_gotoxy(29,0);
 	lcd_write_value(temp,2);
-	lcd_gotoxy(16,1);
+	lcd_gotoxy(31,0);
 	lcd_puts("°");
 	
 }
@@ -69,23 +71,24 @@ void gasolina(void)
 {
 	int aux;
 	adtanque();
-	aux=(valortanque/1024)*100;
-	lcd_gotoxy(8,1);
+	aux=valortanque*0.0009976562*100;
+	lcd_gotoxy(23,1);
 	lcd_puts("Fuel:");
-	lcd_gotoxy(13,1);
+	lcd_gotoxy(28,1);
 	lcd_write_value(aux,3);
-	lcd_gotoxy(16,1);
+	lcd_gotoxy(31,1);
 	lcd_puts("%");
 	
 	if(aux<=25)
 	{
 		PORTD=0b00000001;
-		lcd_gotoxy(0,1);
-		lcd_puts("|T. Bajo|");		
+		lcd_gotoxy(16,1);
+		lcd_puts("T.Bajo");		
 	} 
 	else
 	{
-		
+		lcd_gotoxy(16,1);
+		lcd_puts("     ");
 	}
 }
 void acelerador(void)
@@ -102,10 +105,21 @@ ISR(TIMER0_COMPA_vect)
 {
 	
 }
-
 ISR(TIMER1_COMPA_vect)
 {
 	
+}
+ISR(INT0_vect)
+{
+	encendido++;
+	if (encendido==2)
+	{
+		encendido=0;
+	}
+}
+ISR(INT1_vect)
+{
+
 }
 
 void iniciomicro(void)
