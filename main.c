@@ -14,7 +14,7 @@ int valoracelerador,valortanque,valorfreno,valorluzfreno;
 int valorluzretro;
 
 void configinterrupcion(void);
-void puertos(void);
+void iniciomicro(void);
 void configtimmers(void);
 void adacelerador(void);
 void adtanque(void);
@@ -37,10 +37,16 @@ int main(void)
     }
 }
 
+void iniciomicro(void)
+{
+	
+}
 void configinterrupcion(void)
 {
  //interrupciones
- 
+ EICRA=0b00001010;
+ EIMSK=0b00000011;
+
 }
 void configtimmers(void)
 {
