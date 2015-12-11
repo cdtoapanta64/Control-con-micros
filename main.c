@@ -18,6 +18,9 @@ void configtimmers(void);
 void adacelerador(void);
 void adtanque(void);
 void adfreno(void);
+void adluzfreno(void);
+void adluzretro(void);
+
 void EEPROM_write(unsigned int uiAddress, unsigned char var);
 unsigned char EEPROM_read(unsigned int uiAddress);
 
@@ -54,10 +57,30 @@ ISR(TIMER1_COMPA_vect)
 {
 	
 }
-
-void adfreno(void)
+void adluzfreno(void)
 {
 	ADMUX=0B01000010;
+	ADCSRA=0B11000011;
+	ADCSRA |= (1<<ADSC);
+	// wait until conversion complete ADSC=0 -> Complete
+	while (ADCSRA & (1<<ADSC));
+	// Get ADC the Result
+	valorfreno= ADCW;
+}
+
+void adluzretro(void)
+{
+	ADMUX=0B01000100;
+	ADCSRA=0B11000011;
+	ADCSRA |= (1<<ADSC);
+	// wait until conversion complete ADSC=0 -> Complete
+	while (ADCSRA & (1<<ADSC));
+	// Get ADC the Result
+	valorfreno= ADCW;
+}
+void adfreno(void)
+{
+	ADMUX=0B01000011;
 	ADCSRA=0B11000011;
 	ADCSRA |= (1<<ADSC);
 	// wait until conversion complete ADSC=0 -> Complete
