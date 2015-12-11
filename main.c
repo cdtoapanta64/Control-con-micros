@@ -155,7 +155,7 @@ void configtimmers(void)
 }
 void adtemperatura(void)
 {
-	ADMUX=0B10000010;
+	ADMUX=0B10000101;
 	ADCSRA=0B11000011;
 	ADCSRA |= (1<<ADSC);
 	// wait until conversion complete ADSC=0 -> Complete
