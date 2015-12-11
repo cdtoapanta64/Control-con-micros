@@ -48,17 +48,25 @@ int main(void)
 		{
 			tempambiente();
 			gasolina();
-			acelerador();
 			
-			
+			if (encendido==1)
+			{
+				acelerador();
+			} 
+			else
+			{
+				OCR2B=0;				
+			}
 		}	
+		lcd_clrscr();
+		OCR2B=0;
 	}
 }
 void tempambiente(void)
 {
 	int temp;
 	adtemperatura();
-	temp=valortemperatura/9.3;
+	temp=valortemperatura*0.107526;
 	lcd_gotoxy(25,0);
 	lcd_puts("Tem:");
 	lcd_gotoxy(29,0);
@@ -71,7 +79,7 @@ void gasolina(void)
 {
 	int aux;
 	adtanque();
-	aux=valortanque*0.0009976562*100;
+	aux=valortanque*0.000976562*100;
 	lcd_gotoxy(23,1);
 	lcd_puts("Fuel:");
 	lcd_gotoxy(28,1);
@@ -88,7 +96,7 @@ void gasolina(void)
 	else
 	{
 		lcd_gotoxy(16,1);
-		lcd_puts("     ");
+		lcd_puts("      ");
 	}
 }
 void acelerador(void)
@@ -133,6 +141,10 @@ void iniciomicro(void)
 	DDRC=0xff;
 	
 	DDRD=0b01000011;
+	PORTD|=(1<<2);
+	PORTD|=(1<<3);
+	PORTD|=(1<<4);
+	
 	
 	sei();
 
@@ -162,7 +174,7 @@ void configtimmers(void)
 	
 	//timer 2
 	TCCR2A=0b00100011;
-	TCCR2B=0b00001011;
+	TCCR2B=0b00001011;//TCCR2B=0b00001011
 	OCR2A=100;
 	OCR2B=0;
 	ASSR=0b00000000;
