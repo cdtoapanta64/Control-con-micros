@@ -40,6 +40,8 @@ int main(void)
 void iniciomicro(void)
 {
 	
+
+
 }
 void configinterrupcion(void)
 {
