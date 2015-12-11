@@ -36,7 +36,7 @@ void adacelerador(void)
 }
 void adtanque(void)
 {
-	ADMUX=0B01000000;
+	ADMUX=0B01000001;
 	ADCSRA=0B11000011;
 	ADCSRA |= (1<<ADSC);
 	// wait until conversion complete ADSC=0 -> Complete
