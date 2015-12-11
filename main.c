@@ -53,11 +53,24 @@ void gasolina(void)
 {
 	int aux;
 	adtanque();
-	
 	aux=(valortanque/1024)*100;
-	lcd_gotoxy(4,8);
-	lcd_puts("Fuel:")
-	if 
+	lcd_gotoxy(8,4);
+	lcd_puts("Fuel:");
+	lcd_gotoxy(13,4);
+	lcd_write_value(aux,3);
+	lcd_gotoxy(16,4);
+	lcd_puts("%");
+	
+	if(aux<=25)
+	{
+		PORTD=0b00000001;
+		lcd_gotoxy(0,4);
+		lcd_puts("|T. Bajo|");		
+	} 
+	else
+	{
+		
+	}
 }
 void iniciomicro(void)
 {
