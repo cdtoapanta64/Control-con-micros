@@ -23,22 +23,42 @@ void adtanque(void);
 void adfreno(void);
 void adluzfreno(void);
 void adluzretro(void);
-/////Funcuiones//////
+///////////
 void EEPROM_write(unsigned int uiAddress, unsigned char var);
 unsigned char EEPROM_read(unsigned int uiAddress);
 
+////funciones//////
+void gasolina(void);
+
 int main(void)
 {
+	iniciomicro();
 	lcd_init(LCD_DISP_ON);
 	lcd_clrscr();
-	lcd_gotoxy(0,0);
+	configinterrupcion();
+	configtimmers();
 	
     while(1)
     {
-        
-    }
+		while (((PIND & (1<<PD4))==1))
+		{
+			
+			
+			
+		}	
+	}
 }
 
+void gasolina(void)
+{
+	int aux;
+	adtanque();
+	
+	aux=(valortanque/1024)*100;
+	lcd_gotoxy(4,8);
+	lcd_puts("Fuel:")
+	if 
+}
 void iniciomicro(void)
 {
 	
