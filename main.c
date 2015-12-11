@@ -29,6 +29,7 @@ unsigned char EEPROM_read(unsigned int uiAddress);
 
 ////funciones//////
 void gasolina(void);
+void acelerador(void);
 
 int main(void)
 {
@@ -72,6 +73,17 @@ void gasolina(void)
 		
 	}
 }
+void acelerador(void)
+{
+	int aux;
+	adacelerador();
+	
+	aux=(valoracelerador/1024)*100;
+	OCR2B=aux;
+	
+}
+
+
 void iniciomicro(void)
 {
 	
