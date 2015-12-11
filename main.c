@@ -32,7 +32,7 @@ void adacelerador(void)
 	// wait until conversion complete ADSC=0 -> Complete
 	while (ADCSRA & (1<<ADSC));
 	// Get ADC the Result
-	ana = ADCW;
+	valoracelerador = ADCW;
 }
 void adtanque(void)
 {
@@ -42,7 +42,7 @@ void adtanque(void)
 	// wait until conversion complete ADSC=0 -> Complete
 	while (ADCSRA & (1<<ADSC));
 	// Get ADC the Result
-	ana = ADCW;
+	valortanque = ADCW;
 	
 }
 
