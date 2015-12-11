@@ -11,7 +11,7 @@
 #include "lcd.h"
 
 int valoracelerador,valortanque,valorfreno,valorluzfreno;
-int valorluzretro,temperatura;
+int valorluzretro,valortemperatura;
 
 void configinterrupcion(void);
 void iniciomicro(void);
@@ -30,26 +30,41 @@ unsigned char EEPROM_read(unsigned int uiAddress);
 ////funciones//////
 void gasolina(void);
 void acelerador(void);
+void tempambiente(void);
 
 int main(void)
 {
 	iniciomicro();
-	lcd_init(LCD_DISP_ON);
+	lcd_init(LCD_DISP_ON) ;
 	lcd_clrscr();
 	configinterrupcion();
 	configtimmers();
 	
     while(1)
     {
-		while (((PIND & (1<<PD4))==1))
+		while (((PIND & (1<<PD4))==0))
 		{
-			
+			tempambiente();
+			gasolina();
+			acelerador();
 			
 			
 		}	
 	}
 }
-
+void tempambiente(void)
+{
+	int temp;
+	adtemperatura();
+	temp=valortemperatura/9.3;
+	lcd_gotoxy(10,2);
+	lcd_puts("Tem:");
+	lcd_gotoxy(14,4);
+	lcd_write_value(temp,2);
+	lcd_gotoxy(16,2);
+	lcd_puts("°");
+	
+}
 void gasolina(void)
 {
 	int aux;
@@ -83,6 +98,15 @@ void acelerador(void)
 	
 }
 
+ISR(TIMER0_COMPA_vect)
+{
+	
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+	
+}
 
 void iniciomicro(void)
 {
@@ -129,17 +153,6 @@ void configtimmers(void)
 	OCR2B=0;
 	ASSR=0b00000000;
 }
-
-ISR(TIMER0_COMPA_vect)
-{
-	
-}
-
-ISR(TIMER1_COMPA_vect)
-{
-	
-}
-
 void adtemperatura(void)
 {
 	ADMUX=0B10000010;
@@ -148,7 +161,7 @@ void adtemperatura(void)
 	// wait until conversion complete ADSC=0 -> Complete
 	while (ADCSRA & (1<<ADSC));
 	// Get ADC the Result
-	temperatura= ADCW;
+	valortemperatura= ADCW;
 }
 void adluzfreno(void)
 {
