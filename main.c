@@ -13,6 +13,7 @@
 int valoracelerador,valortanque,valorfreno,valorluzfreno;
 int valorluzretro;
 
+void configinterrupcion(void);
 void puertos(void);
 void configtimmers(void);
 void adacelerador(void);
@@ -26,12 +27,21 @@ unsigned char EEPROM_read(unsigned int uiAddress);
 
 int main(void)
 {
+	lcd_init(LCD_DISP_ON);
+	lcd_clrscr();
+	lcd_gotoxy(0,0);
+	
     while(1)
     {
         
     }
 }
 
+void configinterrupcion(void)
+{
+ //interrupciones
+ 
+}
 void configtimmers(void)
 {
 	//timer 0
@@ -46,6 +56,13 @@ void configtimmers(void)
 	TIMSK1=0b00000010;
 	OCR1A=31250;
 	TCNT1=0;
+	
+	//timer 2
+	TCCR2A=0b00100011;
+	TCCR2B=0b00001011;
+	OCR2A=100;
+	OCR2B=0;
+	ASSR=0b00000000;
 }
 
 ISR(TIMER0_COMPA_vect)
