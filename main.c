@@ -24,6 +24,28 @@ int main(void)
     }
 }
 
+void adacelerador(void)
+{
+	ADMUX=0B01000000;
+	ADCSRA=0B11000011;
+	ADCSRA |= (1<<ADSC);
+	// wait until conversion complete ADSC=0 -> Complete
+	while (ADCSRA & (1<<ADSC));
+	// Get ADC the Result
+	ana = ADCW;
+}
+void adtanque(void)
+{
+	ADMUX=0B01000000;
+	ADCSRA=0B11000011;
+	ADCSRA |= (1<<ADSC);
+	// wait until conversion complete ADSC=0 -> Complete
+	while (ADCSRA & (1<<ADSC));
+	// Get ADC the Result
+	ana = ADCW;
+	
+}
+
 void EEPROM_write(unsigned int uiAddress, unsigned char var)
 {
 	/* Wait for completion of previous write */
