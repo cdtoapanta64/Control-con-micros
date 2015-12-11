@@ -11,17 +11,19 @@
 #include "lcd.h"
 
 int valoracelerador,valortanque,valorfreno,valorluzfreno;
-int valorluzretro;
+int valorluzretro,temperatura;
 
 void configinterrupcion(void);
 void iniciomicro(void);
 void configtimmers(void);
+//////Analogo Digital///////
+void adtemperatura(void);
 void adacelerador(void);
 void adtanque(void);
 void adfreno(void);
 void adluzfreno(void);
 void adluzretro(void);
-
+/////Funcuiones//////
 void EEPROM_write(unsigned int uiAddress, unsigned char var);
 unsigned char EEPROM_read(unsigned int uiAddress);
 
@@ -40,6 +42,16 @@ int main(void)
 void iniciomicro(void)
 {
 	
+	DDRA=0xff;
+	DIDR0=0b00111111;
+	
+	DDRB=0x00;
+	
+	DDRC=0xff;
+	
+	DDRD=0b01000011;
+	
+	sei();
 
 
 }
@@ -83,7 +95,16 @@ ISR(TIMER1_COMPA_vect)
 	
 }
 
-
+void adtemperatura(void)
+{
+	ADMUX=0B10000010;
+	ADCSRA=0B11000011;
+	ADCSRA |= (1<<ADSC);
+	// wait until conversion complete ADSC=0 -> Complete
+	while (ADCSRA & (1<<ADSC));
+	// Get ADC the Result
+	temperatura= ADCW;
+}
 void adluzfreno(void)
 {
 	ADMUX=0B01000010;
