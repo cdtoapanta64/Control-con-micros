@@ -24,6 +24,32 @@ int main(void)
     }
 }
 
+void configtimmers(void)
+{
+	//timer 0
+	TCCR0A=0b00000000;
+	TCCR0B=0b00000110;
+	TIMSK0=0b00000010;
+	
+	//timer 1
+	TCCR1A=0b00000000;
+	TCCR1B=0b00001100;
+	TCCR1C=0b00000000;
+	TIMSK1=0b00000010;
+	OCR1A=31250;
+	TCNT1=0;
+}
+
+ISR(TIMER0_COMPA_vect)
+{
+	
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+	
+}
+
 void adacelerador(void)
 {
 	ADMUX=0B01000000;
