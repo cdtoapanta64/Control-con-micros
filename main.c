@@ -57,11 +57,11 @@ void tempambiente(void)
 	int temp;
 	adtemperatura();
 	temp=valortemperatura/9.3;
-	lcd_gotoxy(10,2);
+	lcd_gotoxy(10,1);
 	lcd_puts("Tem:");
-	lcd_gotoxy(14,4);
+	lcd_gotoxy(14,2);
 	lcd_write_value(temp,2);
-	lcd_gotoxy(16,2);
+	lcd_gotoxy(16,1);
 	lcd_puts("°");
 	
 }
@@ -70,17 +70,17 @@ void gasolina(void)
 	int aux;
 	adtanque();
 	aux=(valortanque/1024)*100;
-	lcd_gotoxy(8,4);
+	lcd_gotoxy(8,1);
 	lcd_puts("Fuel:");
-	lcd_gotoxy(13,4);
+	lcd_gotoxy(13,1);
 	lcd_write_value(aux,3);
-	lcd_gotoxy(16,4);
+	lcd_gotoxy(16,1);
 	lcd_puts("%");
 	
 	if(aux<=25)
 	{
 		PORTD=0b00000001;
-		lcd_gotoxy(0,4);
+		lcd_gotoxy(0,1);
 		lcd_puts("|T. Bajo|");		
 	} 
 	else
@@ -93,7 +93,7 @@ void acelerador(void)
 	int aux;
 	adacelerador();
 	
-	aux=(valoracelerador/1024)*100;
+	aux=(valoracelerador*(0.000976562))*100;
 	OCR2B=aux;
 	
 }
