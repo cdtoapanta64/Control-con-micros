@@ -4,14 +4,14 @@
  * Created: 11/12/2015 10:41:27
  *  Author: USUARIO
  */ 
+
 #define F_CPU 8000000UL
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "lcd.h"
 
-int valoracelerador,valortanque,valorfreno;
-
-
+int valoracelerador,valortanque,valorfreno,valorluzfreno;
+int valorluzretro;
 
 void puertos(void);
 void configtimmers(void);
@@ -57,6 +57,8 @@ ISR(TIMER1_COMPA_vect)
 {
 	
 }
+
+
 void adluzfreno(void)
 {
 	ADMUX=0B01000010;
@@ -65,9 +67,8 @@ void adluzfreno(void)
 	// wait until conversion complete ADSC=0 -> Complete
 	while (ADCSRA & (1<<ADSC));
 	// Get ADC the Result
-	valorfreno= ADCW;
+	valorluzfreno= ADCW;
 }
-
 void adluzretro(void)
 {
 	ADMUX=0B01000100;
@@ -76,7 +77,7 @@ void adluzretro(void)
 	// wait until conversion complete ADSC=0 -> Complete
 	while (ADCSRA & (1<<ADSC));
 	// Get ADC the Result
-	valorfreno= ADCW;
+	valorluzretro= ADCW;
 }
 void adfreno(void)
 {
@@ -121,7 +122,6 @@ void EEPROM_write(unsigned int uiAddress, unsigned char var)
 	/* Start eeprom write by setting EEPE */
 	EECR |= (1<<EEPE);
 }
-
 unsigned char EEPROM_read(unsigned int uiAddress)
 {
 	/* Wait for completion of previous write */
