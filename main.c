@@ -72,7 +72,7 @@ void tempambiente(void)
 	lcd_gotoxy(29,0);
 	lcd_write_value(temp,2);
 	lcd_gotoxy(31,0);
-	lcd_puts("°");
+	lcd_puts("C");
 	
 }
 void gasolina(void)
