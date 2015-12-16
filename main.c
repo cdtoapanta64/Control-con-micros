@@ -16,6 +16,7 @@ int contadorvelocidad,contadordistancia;
 int velocidad=0,velocidadmaxima=0,distanciatotal=0,distanciarecorrido=0,distanciausuario=0,tiempo;
 int aux,aux1,velocidadm,velocidadMm,distanciam,distanciarecorridom,distanciausuariom;
 
+
 void configinterrupcion(void);
 void iniciomicro(void);
 void configtimmers(void);
@@ -24,8 +25,7 @@ void adtemperatura(void);
 void adacelerador(void);
 void adtanque(void);
 void adfreno(void);
-void adluzfreno(void);
-void adluzretro(void);
+
 
 void EEPROM_write(unsigned int uiAddress, unsigned char var);
 unsigned char EEPROM_read(unsigned int uiAddress);
@@ -38,10 +38,14 @@ void focos(void);
 void mostrardistanciatotal(void);
 void mostrardistanciarecorrido(void);
 void mostrardistanciausuario(void);
+void freno(void);
+void retro(void);
 ///Programa Principal///
 int main(void)
 {
 	iniciomicro();
+	distanciatotal=EEPROM_read(1);
+	distanciausuario=EEPROM_read(2);
 	lcd_init(LCD_DISP_ON) ;
 	lcd_clrscr();
 	configtimmers();
@@ -53,6 +57,8 @@ int main(void)
 		while (((PIND & (1<<PD4))==0))
 		{
 			
+			freno();
+			retro();
 			if (encendido==1)
 			{
 				acelerador();
@@ -63,26 +69,25 @@ int main(void)
 			}
 			tempambiente();
 			gasolina();
+			
 			mostrardistanciausuario();
 			mostrardistanciarecorrido();
 			mostrardistanciatotal();
 		
 			///////Velocidad////////////
-			velocidadm=velocidad*3.6;
+			velocidadm=velocidad*60;
 			lcd_gotoxy(0,0);
-			lcd_puts("V");
-			lcd_gotoxy(1,0);
-			lcd_write_value(velocidadm,3);
+			lcd_write_value(velocidadm,4);
 			lcd_gotoxy(4,0);
-			lcd_puts("k/h");
+			lcd_puts("rpm");
 			///////Velocidad////////////
-			velocidadMm=velocidadmaxima*3.6;
-			lcd_gotoxy(8,0);
+			velocidadMm=velocidadmaxima*60;
+			lcd_gotoxy(7,0);
 			lcd_puts("Vm");
-			lcd_gotoxy(10,0);
-			lcd_write_value(velocidadMm,3);
+			lcd_gotoxy(9,0);
+			lcd_write_value(velocidadMm,4);
 			lcd_gotoxy(13,0);
-			lcd_puts("k/h");	
+			lcd_puts("rpm");	
 		
 		}
 		
@@ -95,7 +100,7 @@ int main(void)
 void mostrardistanciatotal(void)
 {
 	///////Distancia Total////////////
-	distanciam=distanciatotal*0.001;
+	distanciam=distanciatotal*0.1;
 	lcd_gotoxy(16,0);
 	lcd_puts("Dt");
 	lcd_gotoxy(18,0);
@@ -106,7 +111,7 @@ void mostrardistanciatotal(void)
 void mostrardistanciarecorrido(void)
 {
 	/////Distancia  Recorrido////////////
-	distanciarecorridom=distanciarecorrido*0.001;
+	distanciarecorridom=distanciarecorrido*0.1;
 	lcd_gotoxy(0,1);
 	lcd_puts("Dr");
 	lcd_gotoxy(2,1);
@@ -117,7 +122,7 @@ void mostrardistanciarecorrido(void)
 void mostrardistanciausuario(void)
 {
 	/////Distancia  Usuario////////////
-	distanciausuariom=distanciausuario*0.001;
+	distanciausuariom=distanciausuario*0.1;
 	lcd_gotoxy(8,1);
 	lcd_puts("Du");
 	lcd_gotoxy(10,1);
@@ -130,7 +135,6 @@ void focos(void)
 	adfreno();
 	if(valorfreno<1024)///////
 	{
-		adluzfreno();
 		if (valorluzfreno<500)/////////
 		{
 			
@@ -172,10 +176,11 @@ void gasolina(void)
 	lcd_write_value(aux,3);
 	lcd_gotoxy(31,1);
 	lcd_puts("%");
+	PORTD&=~(1<<PD0);
 	
 	if(aux<=25)
 	{
-		PORTD=0b00000001;
+		PORTD|=(1<<PD0);
 		lcd_gotoxy(16,1);
 		lcd_puts("T.Bajo");		
 	} 
@@ -190,9 +195,52 @@ void acelerador(void)
 	int aux;
 	adacelerador();
 	
-	aux=(valoracelerador*(0.000976562))*100;
+	aux=-0.1953125*(valoracelerador-1024);
 	OCR2B=aux;
 	
+}
+void freno(void)
+{
+	int aux0;
+	adfreno();
+	aux0=0.1953125*(valorfreno-512);
+	if (aux0<80)
+	{
+		PORTB|=(1<<PB2);
+		if ((PINB & (1<<PB4))==0)
+		{
+			PORTD|=(1<<PD1);
+		}
+		else
+		{
+			PORTD&=~(1<<PD1);
+		}
+	} 
+	else
+	{
+		PORTB&=~(1<<PB2);
+		PORTD&=~(1<<PD1);
+	}
+}
+void retro(void)
+{
+	if (PINB & (1<<PB6) )
+	{
+		PORTB|=(1<<PB1);
+		if ((PINB & (1<<PB5))==0)
+		{
+			PORTD|=(1<<PD5);
+		}
+		else
+		{
+			PORTD&=~(1<<PD5);
+		}
+	} 
+	else
+	{
+		PORTB&=~(1<<PB1);
+		PORTD&=~(1<<PD5);
+	}
 }
 ///velocidad///
 ISR(TIMER0_COMPA_vect)
@@ -209,12 +257,15 @@ ISR(TIMER0_COMPA_vect)
 ISR(TIMER0_COMPB_vect)
 {
 	contadordistancia++;
-	if (contadordistancia>=4)
+	if (contadordistancia>=12)
 	{
 		distanciatotal++;
 		distanciarecorrido++;
 		distanciausuario++;
 		contadordistancia=0;
+		EEPROM_write(distanciatotal,1);
+		EEPROM_write(distanciausuario,2);
+		
 	} 
 
 }
@@ -252,11 +303,13 @@ void iniciomicro(void)
 	DDRA=0xff;
 	DIDR0=0b00111111;
 	
-	DDRB=0x00;
+	 DDRB=0b00000110;
+	PORTB=0b11111000;
 	
-	DDRC=0xff;
+	DDRC=0xFF;
+
 	
-	DDRD=0b01000011;
+	DDRD=0b01100011;
 	PORTD|=(1<<2);
 	PORTD|=(1<<3);
 	PORTD|=(1<<4);
@@ -306,30 +359,11 @@ void adtemperatura(void)
 	// Get ADC the Result
 	valortemperatura= ADCW;
 }
-void adluzfreno(void)
-{
-	ADMUX=0B01000010;
-	ADCSRA=0B11000011;
-	ADCSRA |= (1<<ADSC);
-	// wait until conversion complete ADSC=0 -> Complete
-	while (ADCSRA & (1<<ADSC));
-	// Get ADC the Result
-	valorluzfreno= ADCW;
-}
-void adluzretro(void)
-{
-	ADMUX=0B01000100;
-	ADCSRA=0B11000011;
-	ADCSRA |= (1<<ADSC);
-	// wait until conversion complete ADSC=0 -> Complete
-	while (ADCSRA & (1<<ADSC));
-	// Get ADC the Result
-	valorluzretro= ADCW;
-}
+
 void adfreno(void)
 {
-	ADMUX=0B01000011;
-	ADCSRA=0B11000011;
+	ADMUX=0b01000010;
+	ADCSRA=0b11000011;
 	ADCSRA |= (1<<ADSC);
 	// wait until conversion complete ADSC=0 -> Complete
 	while (ADCSRA & (1<<ADSC));
