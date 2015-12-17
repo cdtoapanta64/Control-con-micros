@@ -34,7 +34,6 @@ unsigned char EEPROM_read(unsigned int uiAddress);
 void gasolina(void);
 void acelerador(void);
 void tempambiente(void);
-void focos(void);
 void mostrardistanciatotal(void);
 void mostrardistanciarecorrido(void);
 void mostrardistanciausuario(void);
@@ -44,12 +43,13 @@ void retro(void);
 int main(void)
 {
 	iniciomicro();
-	distanciatotal=EEPROM_read(1);
-	distanciausuario=EEPROM_read(2);
+
 	lcd_init(LCD_DISP_ON) ;
 	lcd_clrscr();
 	configtimmers();
 	configinterrupcion();
+	distanciatotal=EEPROM_read(0);
+	distanciausuario=EEPROM_read(1);
     while(1)
     {
 		distanciarecorrido=0;
@@ -130,28 +130,11 @@ void mostrardistanciausuario(void)
 	lcd_gotoxy(14,1);
 	lcd_puts("km");
 }
-void focos(void)
-{
-	adfreno();
-	if(valorfreno<1024)///////
-	{
-		if (valorluzfreno<500)/////////
-		{
-			
-		} 
-		else
-		{
-		}
-		
-	}
-	else
-	{
-		
-	}
+
 	
 	
 	
-}/////////////////
+/////////////////
 void tempambiente(void)
 {
 	int temp;
@@ -263,8 +246,8 @@ ISR(TIMER0_COMPB_vect)
 		distanciarecorrido++;
 		distanciausuario++;
 		contadordistancia=0;
-		EEPROM_write(distanciatotal,1);
-		EEPROM_write(distanciausuario,2);
+		EEPROM_write(0,distanciatotal);
+		EEPROM_write(1,distanciausuario);
 		
 	} 
 
@@ -391,6 +374,7 @@ void adtanque(void)
 	valortanque= ADCW;
 	
 }
+
 void EEPROM_write(unsigned int uiAddress, unsigned char var)
 {
 	/* Wait for completion of previous write */
@@ -403,6 +387,7 @@ void EEPROM_write(unsigned int uiAddress, unsigned char var)
 	/* Start eeprom write by setting EEPE */
 	EECR |= (1<<EEPE);
 }
+
 unsigned char EEPROM_read(unsigned int uiAddress)
 {
 	/* Wait for completion of previous write */
