@@ -53,8 +53,6 @@ int main(void)
 	distanciausuario=reco1;	
     while(1)
     {
-		
-		encendido=0;
 		while (((PIND & (1<<PD4))==0))
 		{
 			
@@ -94,7 +92,8 @@ int main(void)
 		
 		lcd_clrscr();
 		OCR2B=0;
-	
+		encendido=0;
+		distanciarecorrido=0;
 	}
 }
 void mostrardistanciatotal(void)
@@ -268,10 +267,7 @@ ISR(TIMER1_COMPA_vect)
 }
 ISR(INT0_vect)
 {
-	while ((PIND & (1<<PD2))==0)//Si se aplasto espera a que lo suelte
-	{
-		
-	}
+	
 	encendido++;
 	if (encendido==2)
 	{
